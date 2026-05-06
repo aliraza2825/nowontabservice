@@ -8,17 +8,12 @@
     <style>
         :root {
             --primary: #8b1248;
-            --primary-light: #f9edf3;
             --text: #151515;
             --muted: #686868;
             --border: #ead2dd;
-            --bg: #ffffff;
-            --card: #ffffff;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -53,6 +48,39 @@
             font-family: Arial, sans-serif;
             font-size: 13px;
             color: var(--muted);
+        }
+
+        .main-menu-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .main-menu-tab {
+            appearance: none;
+            border: 2px solid #151515;
+            background: #fff;
+            color: #151515;
+            padding: 12px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+        }
+
+        .main-menu-tab.active {
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: inset 0 -3px 0 var(--primary);
+        }
+
+        .menu-panel {
+            display: none;
+        }
+
+        .menu-panel.active {
+            display: block;
         }
 
         .menu-tabs {
@@ -138,10 +166,6 @@
             border-bottom: 1px solid rgba(139, 18, 72, 0.16);
         }
 
-        .menu-item:last-child {
-            border-bottom: 0;
-        }
-
         .item-name-row {
             display: flex;
             align-items: center;
@@ -175,6 +199,7 @@
             color: var(--muted);
             font-size: 17px;
             line-height: 1.45;
+            white-space: pre-line;
         }
 
         .item-price {
@@ -186,23 +211,6 @@
 
         .menu-item.unavailable {
             opacity: 0.52;
-        }
-
-        .modifiers {
-            margin-top: 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .modifier-pill {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: var(--muted);
-            background: #f7f7f7;
-            border: 1px solid #ececec;
-            padding: 5px 8px;
-            border-radius: 999px;
         }
 
         .floating-back-top {
@@ -244,6 +252,14 @@
 
             .menu-title {
                 font-size: 34px;
+            }
+
+            .main-menu-tabs {
+                gap: 8px;
+            }
+
+            .main-menu-tab {
+                padding: 10px 15px;
             }
 
             .menu-tabs {
@@ -291,73 +307,72 @@
         @endif
     </div>
 
-    @if(empty($categories))
+    @if(empty($menus))
         <div class="menu-empty">
             Menu is currently unavailable. Please check back soon.
         </div>
     @else
-        <div class="menu-tabs">
-            @foreach($categories as $index => $category)
+        <div class="main-menu-tabs">
+            @foreach($menus as $menuIndex => $menu)
                 <button
-                    class="menu-tab {{ $index === 0 ? 'active' : '' }}"
-                    data-target="category-{{ $index }}"
+                    class="main-menu-tab {{ $menuIndex === 0 ? 'active' : '' }}"
+                    data-menu-target="menu-panel-{{ $menuIndex }}"
                     type="button"
                 >
-                    {{ $category['name'] ?? 'Menu' }}
+                    {{ $menu['name'] ?? 'Menu' }}
                 </button>
             @endforeach
         </div>
 
-        @foreach($categories as $index => $category)
-            <section class="menu-category" id="category-{{ $index }}">
-                <div class="category-header">
-                    <h2>{{ $category['name'] ?? 'Menu' }}</h2>
-                    <div class="category-line"></div>
-                </div>
-
-                <div class="menu-items {{ count($category['items'] ?? []) > 8 ? 'two-col' : '' }}">
-                    @foreach(($category['items'] ?? []) as $item)
-                        <article class="menu-item {{ !($item['available'] ?? true) ? 'unavailable' : '' }}">
-                            <div class="item-content">
-                                <div class="item-name-row">
-                                    <h3 class="item-name">{{ $item['name'] ?? '' }}</h3>
-
-                                    @if(!($item['available'] ?? true))
-                                        <span class="sold-out">Sold Out</span>
-                                    @endif
-                                </div>
-
-                                @if(!empty($item['description']))
-                                    <p class="item-desc">{{ $item['description'] }}</p>
-                                @endif
-
-                                @if(!empty($item['modifiers']))
-                                    <div class="modifiers">
-                                        @foreach($item['modifiers'] as $modifierGroup)
-                                            @foreach(($modifierGroup['items'] ?? []) as $modifier)
-                                                @if(!empty($modifier['name']))
-                                                    <span class="modifier-pill">
-                                                        {{ $modifier['name'] }}
-                                                        @if(isset($modifier['price']) && $modifier['price'] > 0)
-                                                            +${{ number_format($modifier['price'], 2) }}
-                                                        @endif
-                                                    </span>
-                                                @endif
-                                            @endforeach
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="item-price">
-                                @if(isset($item['price']) && $item['price'] !== null)
-                                    ${{ number_format($item['price'], 2) }}
-                                @endif
-                            </div>
-                        </article>
+        @foreach($menus as $menuIndex => $menu)
+            <div class="menu-panel {{ $menuIndex === 0 ? 'active' : '' }}" id="menu-panel-{{ $menuIndex }}">
+                <div class="menu-tabs">
+                    @foreach(($menu['categories'] ?? []) as $categoryIndex => $category)
+                        <button
+                            class="menu-tab {{ $categoryIndex === 0 ? 'active' : '' }}"
+                            data-target="menu-{{ $menuIndex }}-category-{{ $categoryIndex }}"
+                            type="button"
+                        >
+                            {{ $category['name'] ?? 'Menu' }}
+                        </button>
                     @endforeach
                 </div>
-            </section>
+
+                @foreach(($menu['categories'] ?? []) as $categoryIndex => $category)
+                    <section class="menu-category" id="menu-{{ $menuIndex }}-category-{{ $categoryIndex }}">
+                        <div class="category-header">
+                            <h2>{{ $category['name'] ?? 'Menu' }}</h2>
+                            <div class="category-line"></div>
+                        </div>
+
+                        <div class="menu-items {{ count($category['items'] ?? []) > 8 ? 'two-col' : '' }}">
+                            @foreach(($category['items'] ?? []) as $item)
+                                <article class="menu-item {{ !($item['available'] ?? true) ? 'unavailable' : '' }}">
+                                    <div class="item-content">
+                                        <div class="item-name-row">
+                                            <h3 class="item-name">{{ $item['name'] ?? '' }}</h3>
+
+                                            @if(!($item['available'] ?? true))
+                                                <span class="sold-out">Sold Out</span>
+                                            @endif
+                                        </div>
+
+                                        @if(!empty($item['description']))
+                                            <p class="item-desc">{{ $item['description'] }}</p>
+                                        @endif
+                                    </div>
+
+                                    <div class="item-price">
+                                        @if(isset($item['price']) && $item['price'] !== null)
+                                            ${{ number_format($item['price'], 2) }}
+                                        @endif
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    </section>
+                @endforeach
+            </div>
         @endforeach
     @endif
 </div>
@@ -365,14 +380,48 @@
 <button class="floating-back-top" id="backTop" type="button">↑</button>
 
 <script>
-    const tabs = document.querySelectorAll('.menu-tab');
-    const backTop = document.getElementById('backTop');
+    const mainTabs = document.querySelectorAll('.main-menu-tab');
+    const panels = document.querySelectorAll('.menu-panel');
 
-    tabs.forEach(function(tab) {
+    mainTabs.forEach(function(tab) {
         tab.addEventListener('click', function() {
-            tabs.forEach(function(t) {
+            mainTabs.forEach(function(t) {
                 t.classList.remove('active');
             });
+
+            panels.forEach(function(panel) {
+                panel.classList.remove('active');
+            });
+
+            tab.classList.add('active');
+
+            const targetPanel = document.getElementById(tab.dataset.menuTarget);
+
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+
+                const categoryTabs = targetPanel.querySelectorAll('.menu-tab');
+                categoryTabs.forEach(function(t, index) {
+                    t.classList.toggle('active', index === 0);
+                });
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    document.querySelectorAll('.menu-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            const panel = tab.closest('.menu-panel');
+
+            if (panel) {
+                panel.querySelectorAll('.menu-tab').forEach(function(t) {
+                    t.classList.remove('active');
+                });
+            }
 
             tab.classList.add('active');
 
@@ -386,6 +435,8 @@
             }
         });
     });
+
+    const backTop = document.getElementById('backTop');
 
     window.addEventListener('scroll', function() {
         if (window.scrollY > 500) {
