@@ -109,6 +109,13 @@ class ToastMenuController extends Controller
 
         foreach (($rawMenu['menus'] ?? []) as $menu) {
             $menuName = $menu['name'] ?? 'Menu';
+
+            $allowedMenus = ['Kitchen', 'Bar'];
+
+            if (!in_array($menuName, $allowedMenus, true)) {
+                continue;
+            }
+
             $categories = [];
 
             foreach (($menu['menuGroups'] ?? []) as $group) {
