@@ -6,3 +6,4 @@ use App\Http\Controllers\ToastMenuController;
 
 Route::get('/menu-widget', [MenuWidgetController::class, 'index']);
 Route::get('/force-sync-menu', [ToastMenuController::class, 'forceSyncMenu']);
+Route::get('/menu-json', [ToastMenuController::class, 'publicMenu']);
