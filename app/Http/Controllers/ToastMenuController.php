@@ -109,10 +109,9 @@ class ToastMenuController extends Controller
 
         foreach (($rawMenu['menus'] ?? []) as $menu) {
             $menuName = $menu['name'] ?? 'Menu';
-
             $categories = [];
 
-            foreach (($menu['groups'] ?? []) as $group) {
+            foreach (($menu['menuGroups'] ?? []) as $group) {
                 $items = $this->extractItemsFromGroup($group);
 
                 if (!empty($items)) {
@@ -136,12 +135,15 @@ class ToastMenuController extends Controller
             'categories' => $menus[0]['categories'] ?? [],
         ];
     }
-
     private function extractItemsFromGroup(array $group): array
     {
         $items = [];
 
-        foreach (($group['items'] ?? []) as $item) {
+        foreach (($group['menuItems'] ?? []) as $item) {
+            if ($this->shouldHideItem($item)) {
+                continue;
+            }
+
             $items[] = [
                 'guid' => $item['guid'] ?? null,
                 'name' => $item['name'] ?? '',
@@ -149,11 +151,11 @@ class ToastMenuController extends Controller
                 'price' => $this->getItemPrice($item),
                 'available' => $this->isAvailable($item),
                 'image' => $item['image'] ?? null,
-                'modifiers' => $this->getModifiers($item),
+                'modifiers' => [],
             ];
         }
 
-        foreach (($group['subgroups'] ?? []) as $subgroup) {
+        foreach (($group['menuGroups'] ?? []) as $subgroup) {
             $items = array_merge($items, $this->extractItemsFromGroup($subgroup));
         }
 
@@ -216,5 +218,32 @@ class ToastMenuController extends Controller
         }
 
         return $modifiers;
+    }
+
+    private function shouldHideItem(array $item): bool
+    {
+        $name = trim($item['name'] ?? '');
+
+        if ($name === '') {
+            return true;
+        }
+
+        // Hide Toast internal/course/helper items
+        if (str_starts_with($name, '**')) {
+            return true;
+        }
+
+        if (str_starts_with($name, '---')) {
+            return true;
+        }
+
+        // Hide zero price items that are likely internal placeholders
+        $salesCategory = $item['salesCategory']['name'] ?? '';
+
+        if ((float)($item['price'] ?? 0) <= 0 && in_array($salesCategory, ['Course Lines'], true)) {
+            return true;
+        }
+
+        return false;
     }
 }
