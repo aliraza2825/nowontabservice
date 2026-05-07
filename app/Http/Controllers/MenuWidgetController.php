@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ToastMenu;
+use App\Services\MenuWidgetFilter;
 
 class MenuWidgetController extends Controller
 {
-    public function index()
+    public function index(MenuWidgetFilter $filter)
     {
         $menu = ToastMenu::latest()->first();
 
@@ -14,7 +15,7 @@ class MenuWidgetController extends Controller
         $categories = [];
 
         if ($menu) {
-            $formatted = $menu->formatted_data;
+            $formatted = $filter->filter($menu->formatted_data);
             $menus = $formatted['menus'] ?? [];
             $categories = $formatted['categories'] ?? [];
         }
