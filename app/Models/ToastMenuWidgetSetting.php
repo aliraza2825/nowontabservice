@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class ToastMenuWidgetSetting extends Model
 {
     protected $fillable = [
+        'location_guid',
+        'location_name',
         'allowed_menu_guids',
         'allowed_category_guids',
         'allowed_item_guids',
@@ -18,8 +20,18 @@ class ToastMenuWidgetSetting extends Model
         'allowed_item_guids' => 'array',
     ];
 
-    public static function current(): ?self
+    public static function current(?string $locationGuid = null): ?self
     {
-        return self::latest()->first();
+        if (! $locationGuid) {
+            return self::latest()->first();
+        }
+
+        $settings = self::where('location_guid', $locationGuid)->latest()->first();
+
+        if (! $settings && $locationGuid === config('services.toast.restaurant_guid')) {
+            return self::whereNull('location_guid')->latest()->first();
+        }
+
+        return $settings;
     }
 }

@@ -46,6 +46,44 @@
             align-items: center;
         }
 
+        .location-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 18px;
+        }
+
+        .location-tab {
+            background: #fff;
+            border: 1px solid #d8d2c6;
+            border-radius: 6px;
+            color: #222;
+            display: inline-flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 220px;
+            padding: 10px 12px;
+            text-decoration: none;
+        }
+
+        .location-tab.active {
+            background: #2c2924;
+            border-color: #2c2924;
+            color: #fff;
+        }
+
+        .location-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .location-guid {
+            color: inherit;
+            font-size: 11px;
+            opacity: .72;
+            overflow-wrap: anywhere;
+        }
+
         .button {
             border: 0;
             border-radius: 6px;
@@ -217,7 +255,7 @@
             </div>
 
             <div class="actions">
-                <a class="button secondary" href="/menu-widget" target="_blank">View Widget</a>
+                <a class="button secondary" href="{{ url('/menu-widget') }}?location={{ urlencode($currentLocation['guid']) }}" target="_blank">View Widget</a>
                 <button class="button sync" form="fetch-new-menu" type="submit">Fetch New Menu</button>
                 <button class="button" form="widget-settings" type="submit">Save Selection</button>
             </div>
@@ -231,8 +269,21 @@
             <div class="notice error">{{ session('error') }}</div>
         @endif
 
+        <nav class="location-tabs" aria-label="Locations">
+            @foreach($locations as $location)
+                <a
+                    class="location-tab {{ $location['guid'] === $currentLocation['guid'] ? 'active' : '' }}"
+                    href="{{ route('menu-widget.admin.edit', ['location' => $location['guid']]) }}"
+                >
+                    <span class="location-name">{{ $location['name'] }}</span>
+                    <span class="location-guid">{{ $location['guid'] }}</span>
+                </a>
+            @endforeach
+        </nav>
+
         <form id="fetch-new-menu" method="POST" action="{{ route('menu-widget.admin.fetch') }}">
             @csrf
+            <input type="hidden" name="location_guid" value="{{ $currentLocation['guid'] }}">
         </form>
 
         @if(empty($menus))
@@ -240,6 +291,7 @@
         @else
             <form id="widget-settings" method="POST" action="{{ route('menu-widget.admin.update') }}">
                 @csrf
+                <input type="hidden" name="location_guid" value="{{ $currentLocation['guid'] }}">
 
                 @foreach($menus as $menu)
                     @php

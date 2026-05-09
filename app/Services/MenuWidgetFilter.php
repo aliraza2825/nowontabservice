@@ -8,8 +8,13 @@ class MenuWidgetFilter
 {
     private ?ToastMenuWidgetSetting $settings = null;
 
-    public function filter(array $formattedMenu): array
+    private ?string $locationGuid = null;
+
+    public function filter(array $formattedMenu, ?string $locationGuid = null): array
     {
+        $this->locationGuid = $locationGuid;
+        $this->settings = null;
+
         if ($this->currentSettings()) {
             return $this->filterUsingSavedSettings($formattedMenu);
         }
@@ -138,7 +143,7 @@ class MenuWidgetFilter
 
     private function currentSettings(): ?ToastMenuWidgetSetting
     {
-        return $this->settings ??= ToastMenuWidgetSetting::current();
+        return $this->settings ??= ToastMenuWidgetSetting::current($this->locationGuid);
     }
 
     private function normalizedSettingGuids(string $type): array

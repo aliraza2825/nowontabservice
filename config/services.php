@@ -40,6 +40,16 @@ return [
         'client_secret' => env('TOAST_CLIENT_SECRET'),
         'restaurant_guid' => env('TOAST_RESTAURANT_GUID'),
         'user_access_type' => env('TOAST_USER_ACCESS_TYPE', 'TOAST_MACHINE_CLIENT'),
+        'locations' => [
+            [
+                'name' => 'Nowon Bushwick',
+                'guid' => env('TOAST_BUSHWICK_RESTAURANT_GUID', '11218f7a-00ff-4cfb-8130-ded94b5ae660'),
+            ],
+            [
+                'name' => 'Nowon East Village',
+                'guid' => env('TOAST_EAST_VILLAGE_RESTAURANT_GUID', env('TOAST_RESTAURANT_GUID')),
+            ],
+        ],
     ],
 
 ];

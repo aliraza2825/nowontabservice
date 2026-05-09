@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\ToastMenu;
+use App\Services\ToastLocationService;
 use App\Services\ToastMenuFormatter;
 use App\Services\ToastService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ToastMenuController extends Controller
 {
-    public function publicMenu()
+    public function publicMenu(Request $request, ToastLocationService $locations)
     {
-        $menu = ToastMenu::latest()->first();
+        $location = $locations->find($request->query('location'));
+        $menu = ToastMenu::latestForLocation($location['guid']);
 
         if (! $menu) {
             return response()->json([
@@ -23,18 +26,20 @@ class ToastMenuController extends Controller
 
         return response()->json([
             'success' => true,
+            'location' => $location,
             'last_synced_at' => optional($menu->last_synced_at)->toDateTimeString(),
             'categories' => $menu->formatted_data['categories'] ?? [],
         ]);
     }
 
-    public function syncMenu(ToastService $toastService, ToastMenuFormatter $formatter)
+    public function syncMenu(ToastService $toastService, ToastMenuFormatter $formatter, ToastLocationService $locations)
     {
         try {
-            $metadata = $toastService->getMetadata();
+            $location = $locations->default();
+            $metadata = $toastService->getMetadata($location['guid']);
             $metadataHash = md5(json_encode($metadata));
 
-            $latestMenu = ToastMenu::latest()->first();
+            $latestMenu = ToastMenu::latestForLocation($location['guid']);
 
             if ($latestMenu && $latestMenu->metadata_hash === $metadataHash) {
                 return response()->json([
@@ -44,10 +49,12 @@ class ToastMenuController extends Controller
                 ]);
             }
 
-            $rawMenu = $toastService->getMenus();
+            $rawMenu = $toastService->getMenus($location['guid']);
             $formattedMenu = $formatter->format($rawMenu);
 
             ToastMenu::create([
+                'location_guid' => $location['guid'],
+                'location_name' => $location['name'],
                 'raw_json' => json_encode($rawMenu),
                 'formatted_json' => json_encode($formattedMenu),
                 'metadata_hash' => $metadataHash,
@@ -72,14 +79,17 @@ class ToastMenuController extends Controller
         }
     }
 
-    public function forceSyncMenu(ToastService $toastService, ToastMenuFormatter $formatter)
+    public function forceSyncMenu(ToastService $toastService, ToastMenuFormatter $formatter, ToastLocationService $locations)
     {
         try {
-            $metadata = $toastService->getMetadata();
-            $rawMenu = $toastService->getMenus();
+            $location = $locations->default();
+            $metadata = $toastService->getMetadata($location['guid']);
+            $rawMenu = $toastService->getMenus($location['guid']);
             $formattedMenu = $formatter->format($rawMenu);
 
             ToastMenu::create([
+                'location_guid' => $location['guid'],
+                'location_name' => $location['name'],
                 'raw_json' => json_encode($rawMenu),
                 'formatted_json' => json_encode($formattedMenu),
                 'metadata_hash' => md5(json_encode($metadata)),

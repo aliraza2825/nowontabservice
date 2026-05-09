@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Http;
 class ToastService
 {
     protected string $baseUrl;
+
     protected string $clientId;
+
     protected string $clientSecret;
+
     protected string $restaurantGuid;
+
     protected string $userAccessType;
 
     public function __construct()
@@ -28,55 +32,55 @@ class ToastService
             $response = Http::timeout(30)
                 ->acceptJson()
                 ->asJson()
-                ->post($this->baseUrl . '/authentication/v1/authentication/login', [
+                ->post($this->baseUrl.'/authentication/v1/authentication/login', [
                     'clientId' => $this->clientId,
                     'clientSecret' => $this->clientSecret,
                     'userAccessType' => $this->userAccessType,
                 ]);
 
-            if (!$response->successful()) {
-                throw new \Exception('Toast authentication failed: ' . $response->status() . ' - ' . $response->body());
+            if (! $response->successful()) {
+                throw new \Exception('Toast authentication failed: '.$response->status().' - '.$response->body());
             }
 
             $token = $response->json('token.accessToken');
 
-            if (!$token) {
-                throw new \Exception('Toast access token missing: ' . $response->body());
+            if (! $token) {
+                throw new \Exception('Toast access token missing: '.$response->body());
             }
 
             return $token;
         });
     }
 
-    public function getMetadata(): array
+    public function getMetadata(?string $restaurantGuid = null): array
     {
         $response = Http::timeout(30)
             ->withToken($this->getAccessToken())
             ->acceptJson()
             ->withHeaders([
-                'Toast-Restaurant-External-ID' => $this->restaurantGuid,
+                'Toast-Restaurant-External-ID' => $restaurantGuid ?? $this->restaurantGuid,
             ])
-            ->get($this->baseUrl . '/menus/v2/metadata');
+            ->get($this->baseUrl.'/menus/v2/metadata');
 
-        if (!$response->successful()) {
-            throw new \Exception('Toast metadata failed: ' . $response->status() . ' - ' . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Toast metadata failed: '.$response->status().' - '.$response->body());
         }
 
         return $response->json();
     }
 
-    public function getMenus(): array
+    public function getMenus(?string $restaurantGuid = null): array
     {
         $response = Http::timeout(60)
             ->withToken($this->getAccessToken())
             ->acceptJson()
             ->withHeaders([
-                'Toast-Restaurant-External-ID' => $this->restaurantGuid,
+                'Toast-Restaurant-External-ID' => $restaurantGuid ?? $this->restaurantGuid,
             ])
-            ->get($this->baseUrl . '/menus/v2/menus');
+            ->get($this->baseUrl.'/menus/v2/menus');
 
-        if (!$response->successful()) {
-            throw new \Exception('Toast menu fetch failed: ' . $response->status() . ' - ' . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Toast menu fetch failed: '.$response->status().' - '.$response->body());
         }
 
         return $response->json();
