@@ -9,6 +9,11 @@ $csv = static function (?string $value): array {
 };
 
 return [
+    'admin' => [
+        'username' => env('MENU_WIDGET_ADMIN_USERNAME', 'nowonadmin'),
+        'password' => env('MENU_WIDGET_ADMIN_PASSWORD', 'NowonMenu2026!'),
+    ],
+
     'widget' => [
         'allowed_menu_names' => $csv(env('TOAST_WIDGET_ALLOWED_MENU_NAMES', 'Kitchen,Bar')),
         'allowed_menu_guids' => $csv(env('TOAST_WIDGET_ALLOWED_MENU_GUIDS')),

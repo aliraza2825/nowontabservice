@@ -258,6 +258,7 @@
                 <a class="button secondary" href="{{ url('/menu-widget') }}?location={{ urlencode($currentLocation['guid']) }}" target="_blank">View Widget</a>
                 <button class="button sync" form="fetch-new-menu" type="submit">Fetch New Menu</button>
                 <button class="button" form="widget-settings" type="submit">Save Selection</button>
+                <button class="button secondary" form="admin-logout" type="submit">Logout</button>
             </div>
         </div>
 
@@ -284,6 +285,10 @@
         <form id="fetch-new-menu" method="POST" action="{{ route('menu-widget.admin.fetch') }}">
             @csrf
             <input type="hidden" name="location_guid" value="{{ $currentLocation['guid'] }}">
+        </form>
+
+        <form id="admin-logout" method="POST" action="{{ route('menu-widget.admin.logout') }}">
+            @csrf
         </form>
 
         @if(empty($menus))
