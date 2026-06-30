@@ -10,7 +10,6 @@
             --accent: #b3346b;
             --text: #111;
             --muted: #777;
-            --tab-border: #e2dfe0;
         }
 
         * {
@@ -39,8 +38,8 @@
 
         .main-menu-tab {
             appearance: none;
-            background: #fff;
-            border: 1px solid transparent;
+            background: transparent;
+            border: 0;
             color: var(--text);
             cursor: pointer;
             font: 700 16px/1 Georgia, 'Times New Roman', serif;
@@ -49,7 +48,6 @@
         }
 
         .main-menu-tab.active {
-            border-color: var(--tab-border);
             border-bottom: 2px solid var(--accent);
             color: var(--accent);
         }
@@ -117,9 +115,17 @@
         }
 
         .menu-location-note {
-            color: var(--muted);
-            font: 15px/1.45 Arial, sans-serif;
+            color: #ffffff;
+            font-family: "Avenir Next", "Avenir", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.25;
+            letter-spacing: 0.01em;
+            text-align: center;
             margin: 32px 0 0;
+            max-width: 360px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         @media (max-width: 700px) {
