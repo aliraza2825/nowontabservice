@@ -116,6 +116,12 @@
             white-space: nowrap;
         }
 
+        .menu-location-note {
+            color: var(--muted);
+            font: 15px/1.45 Arial, sans-serif;
+            margin: 32px 0 0;
+        }
+
         @media (max-width: 700px) {
             .menu-wrapper {
                 padding-left: 16px;
@@ -193,6 +199,8 @@
                     @endforeach
                 </div>
             @endforeach
+
+            <p class="menu-location-note">Menu offerings and prices vary by location</p>
         @endif
     </div>
 
