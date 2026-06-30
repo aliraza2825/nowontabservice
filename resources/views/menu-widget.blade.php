@@ -115,15 +115,15 @@
         }
 
         .menu-location-note {
-            color: #5f667a;
-            font-family: "Avenir Next", "Avenir", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 18px;
-            font-weight: 400;
-            line-height: 1.35;
-            letter-spacing: 0.005em;
+            color: #2f3a57;
+            font-family: "Avenir Next", "Avenir", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 34px;
+            font-weight: 500;
+            line-height: 1.18;
+            letter-spacing: 0;
             text-align: center;
-            margin: 32px 0 0;
-            max-width: 360px;
+            margin: 56px 0 0;
+            max-width: 520px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -151,6 +151,13 @@
             .item-desc,
             .item-price {
                 font-size: 15px;
+            }
+
+            .menu-location-note {
+                font-size: 24px;
+                line-height: 1.24;
+                margin-top: 40px;
+                max-width: 360px;
             }
         }
     </style>
