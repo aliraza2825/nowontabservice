@@ -115,17 +115,14 @@
         }
 
         .menu-location-note {
-            color: #111111;
-            font-family: "Avenir Next", "Avenir", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 48px;
-            font-weight: 800;
-            line-height: 1.08;
-            letter-spacing: -0.01em;
-            text-align: center;
-            margin: 56px 0 0;
-            max-width: 760px;
-            margin-left: auto;
-            margin-right: auto;
+            color: var(--muted);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 400;
+            font-style: italic;
+            line-height: 1.45;
+            text-align: left;
+            margin: 26px 0 0;
         }
 
         @media (max-width: 700px) {
@@ -154,10 +151,8 @@
             }
 
             .menu-location-note {
-                font-size: 34px;
-                line-height: 1.12;
-                margin-top: 40px;
-                max-width: 520px;
+                font-size: 13px;
+                margin-top: 22px;
             }
         }
     </style>
