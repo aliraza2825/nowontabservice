@@ -115,12 +115,12 @@
         }
 
         .menu-location-note {
-            color: #ffffff;
+            color: #5f667a;
             font-family: "Avenir Next", "Avenir", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 18px;
-            font-weight: 500;
-            line-height: 1.25;
-            letter-spacing: 0.01em;
+            font-weight: 400;
+            line-height: 1.35;
+            letter-spacing: 0.005em;
             text-align: center;
             margin: 32px 0 0;
             max-width: 360px;
